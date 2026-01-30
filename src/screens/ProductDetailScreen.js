@@ -6,6 +6,7 @@ export default function ProductDetailScreen({ route }) {
   const { id } = route.params;
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -22,7 +23,9 @@ export default function ProductDetailScreen({ route }) {
     loadProduct();
   }, [id]);
 
-  if (loading) return <ActivityIndicator size="large" />;
+  if (loading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>;
+  if (error) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text style={{ color: 'red' }}>{error}</Text></View>;
+  if (!product) return null;
 
   return (
     <View>
