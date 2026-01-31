@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 
-const baseURL = Platform.OS === 'android' ? 'http://10.0.2.2:5000' : 'http://127.0.0.1:5000';
+// Using DummyJSON for assessment requirements
+const baseURL = 'https://dummyjson.com';
 
 const apiClient = axios.create({
   baseURL,
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },

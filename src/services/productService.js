@@ -1,9 +1,7 @@
-import axios from 'axios';
-
-const API_URL = 'https://dummyjson.com/products';
+import apiClient from './apiClient';
 
 export const fetchProducts = async () => {
-  const response = await axios.get(API_URL);
+  const response = await apiClient.get('/products');
   // Map 'title' to 'name' to match our app structure
   return response.data.products.map(product => ({
     ...product,
@@ -15,7 +13,7 @@ export const fetchProducts = async () => {
 };
 
 export const fetchProductById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`);
+  const response = await apiClient.get(`/products/${id}`);
   const product = response.data;
   return {
     ...product,
@@ -24,6 +22,6 @@ export const fetchProductById = async (id) => {
 };
 
 export const createProduct = async (product) => {
-  const response = await axios.post(`${API_URL}/add`, product);
+  const response = await apiClient.post('/products/add', product);
   return response.data;
 };
