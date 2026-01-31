@@ -1,56 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import ProductCard from '../components/ProductCard';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { fetchProducts } from '../services/productService';
 
 export default function ProductListScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const data = await fetchProducts();
-        setProducts(data);
-      } catch (error) {
-        setError('Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadProducts = async (isRefresh = false) => {
+    if (!isRefresh) setLoading(true);
+    try {
+      setError('');
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError(`Failed: ${error.message || 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     loadProducts();
   }, []);
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadProducts(true);
+  };
 
-  if (loading) return <ActivityIndicator size="large" />;
-  if (error) return <Text>{error}</Text>;
+  if (loading && !refreshing) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#007AFF" /></View>;
+
+  // Show error but allow refresh
+  if (error && !products.length) return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+      <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
+      <TouchableOpacity onPress={() => loadProducts()} style={{ padding: 10, backgroundColor: '#ddd', borderRadius: 5 }}>
+        <Text>Try Again</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={{ flex: 1, padding: 16, backgroundColor: '#f5f5f5' }}>
       <FlatList
+        showsVerticalScrollIndicator={false}
         data={products}
         keyExtractor={item => item.id.toString()}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#007AFF']} />
+        }
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              backgroundColor: 'white',
-              padding: 16,
-              marginBottom: 12,
-              borderRadius: 8,
-              elevation: 2,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.2,
-              shadowRadius: 1.41,
-            }}
+          <ProductCard
+            item={item}
             onPress={() => navigation.navigate('Details', { id: item.id })}
-          >
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4 }}>{item.name}</Text>
-            <Text style={{ color: '#666' }}>{item.description}</Text>
-            <Text style={{ marginTop: 8, fontWeight: '600', color: '#2ecc71' }}>₹{item.price}</Text>
-          </TouchableOpacity>
+          />
         )}
       />
 
