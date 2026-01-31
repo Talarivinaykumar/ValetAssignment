@@ -1,80 +1,77 @@
 # Valet Mobile Assignment
 
-This repository contains the mobile application and backend for the Valet assignment.
+This repository contains the mobile application for the Valet assignment, built with **React Native**.
 
-## Project Structure
+## Project Overview
 
-- `valetmobile/` - React Native Application
-- `backend/` - Flask Backend Service
+The application is a product management tool that allows users to:
+1.  **View a list of products** (fetched from an external API).
+2.  **View detailed information** about a specific product.
+3.  **Create new products** via a form.
+
+## APIs Used
+
+The application uses **Mock APIs** provided by [DummyJSON](https://dummyjson.com) to simulate a real backend integration.
+
+- **Base URL**: `https://dummyjson.com`
+- **Endpoints**:
+    - `GET /products`: Fetches the list of initial items.
+    - `GET /products/<id>`: Fetches details for a specific item.
+    - `POST /products/add`: Simulates creating a new item.
+
+> **Note on Persistence**: Since we are using a public mock API, creating a new product is simulated. The API returns a success response (200 OK), but the new item **will not actually persist** in the product list on refresh. This is expected behavior for this assessment.
 
 ## Prerequisites
 
-- Node.js & npm
-- Python 3 & pip
-- Android Studio / Emulator
+- **Node.js** & **npm**
+- **Android Studio** (for Android Emulator) or a physical Android device.
 
-## Setup Intructions
+## Setup Instructions
 
-### 1. Backend
+### 1. Installation
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies:
-    ```bash
-    pip install flask flask-cors
-    ```
-3.  Run the server:
-    ```bash
-    flask --app app run
-    ```
-    The server will start on `http://127.0.0.1:5000`.
+Navigate to the project directory and install dependencies:
 
-### 2. Mobile App
+```bash
+cd valetmobile
+npm install
+```
 
-1.  Navigate to the app directory:
-    ```bash
-    cd valetmobile
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Run on Android:
-    ```bash
-    npm run android
-    ```
+### 2. Running the App
 
-## Development Notes
+Start the Metro Bundler and launch the app on your Android emulator or connected device:
 
-### API Connection
-The app is currently configured to use **DummyJSON** (`https://dummyjson.com`) to satisfy the assignment requirement for "Mock APIs".
+```bash
+npm run android
+```
 
-- **Base URL**: `https://dummyjson.com`
-- **Endpoints Used**:
-  - `GET /products`
-  - `GET /products/<id>`
-  - `POST /products/add`
+## Features Implemented
 
-**Note**: Since we are using a public mock API, creating a new product is simulated. The API returns a success response, but the new item **will not actually persist** in the product list on refresh.
+- **Product List Screen**:
+  - Fetches data from `dummyjson.com`.
+  - Implements **Pull-to-Refresh** functionality.
+  - Displays product title, price, and a short description.
 
-To switch to the local Flask backend:
-1. Edit `src/services/apiClient.js`.
-2. Uncomment the `localhost` Base URL configuration.
-3. Ensure the Flask server is running in `/backend`.
+- **Product Detail Screen**:
+  - Clean, card-based UI layout.
+  - Displays full product description and pricing.
 
-### Assumptions
-- The app uses DummyJSON for demonstration purposes.
-- No permanent database is used; data is stored in-memory in the Python process and resets on restart.
+- **Create Product Screen**:
+  - Form with validation for Name and Price.
+  - Submits data to the `POST /products/add` endpoint.
+  - Handles loading states and error feedback.
 
-## Features implemented
-- **Product List**: Fetches data from API, pull-to-refresh support.
-- **Product Detail**: Shows full product info.
-- **Create Product**: Simple form with validation to add new items.
-- **Error Handling**: Graceful error messages and retry mechanisms.
+## Assumptions
+
+- **Mock API Usage**: The assignment allows for "Mock APIs". I chose DummyJSON to demonstrate full HTTP networking (axios) without the complexity of setting up a local server environment for the reviewer.
+- **Data Persistence**: As noted above, data created via the "Add Product" form is not permanent.
+- **Android Focus**: The app is tested primarily on Android. Layouts use `SafeAreaView` and standard components that should work on iOS, but it has been optimized for the Android experience.
 
 ## Future Improvements
-- **TypeScript**: Migrate to TypeScript for better type safety.
-- **State Management**: Use Redux or Context API for larger scale state.
-- **Persistent Storage**: dynamic database (SQLite/PostgreSQL) for the backend.
+
+If given more time, I would improve the following:
+
+- **TypeScript Migration**: Convert the codebase to TypeScript for better type safety and maintainability.
+- **State Management**: Implement Redux Toolkit or Context API to manage global state (e.g., adding a "Cart" feature).
+- **Offline Mode**: Use `AsyncStorage` or `React Native MMKV` to cache products for offline viewing.
+- **Unit Testing**: Add unit tests using `Jest` and `React Native Testing Library` to ensure component reliability.
